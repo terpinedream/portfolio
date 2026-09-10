@@ -26,3 +26,7 @@ pnpm-debug.log*
 
 # local scratch
 *.local
+
+# Cursor agent stubs (local only)
+AGENTS.md
+CLAUDE.md
