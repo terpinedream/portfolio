@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#e7eaee"/>
+  <circle cx="980" cy="120" r="220" fill="#1a6b6b" fill-opacity="0.12"/>
+  <circle cx="160" cy="520" r="180" fill="#2c3540" fill-opacity="0.1"/>
+  <text x="80" y="300" font-family="Georgia, serif" font-size="96" fill="#141820">terpinedream</text>
+  <text x="80" y="380" font-family="Helvetica, Arial, sans-serif" font-size="36" fill="#3d4554">Linux tooling &amp; data, built in the open</text>
+</svg>

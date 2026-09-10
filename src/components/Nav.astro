@@ -1,0 +1,132 @@
+---
+import { site } from '../content/site';
+import { withBase } from '../lib/paths';
+---
+
+<header class="nav">
+	<div class="nav__inner wrap">
+		<a class="nav__brand" href={withBase()}>{site.brand}</a>
+		<nav class="nav__links" aria-label="Primary">
+			<a href={withBase('#toolkit')}>Toolkit</a>
+			<a href={withBase('#research')}>Research</a>
+			<a href={withBase('#work')}>Work</a>
+			<a href={withBase('#about')}>About</a>
+			<a href={withBase('#ethos')}>Ethos</a>
+			<a href={withBase('#contact')}>Contact</a>
+		</nav>
+		<button type="button" class="nav__cmd" data-open-palette aria-haspopup="dialog">
+			<span class="nav__cmd-label">Jump</span>
+			<kbd>/</kbd>
+		</button>
+	</div>
+</header>
+
+<style>
+	.nav {
+		position: sticky;
+		top: 0;
+		z-index: 40;
+		backdrop-filter: blur(10px);
+		background: color-mix(in srgb, var(--color-paper) 82%, transparent);
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.3s var(--ease-out);
+	}
+
+	.nav.is-scrolled {
+		border-bottom-color: var(--color-line);
+	}
+
+	.nav__inner {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		min-height: 3.5rem;
+	}
+
+	.nav__brand {
+		font-family: var(--font-display);
+		font-size: 1.05rem;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		text-decoration: none;
+		opacity: 0.55;
+		transition: opacity 0.25s var(--ease-out);
+	}
+
+	.nav.is-past-hero .nav__brand {
+		opacity: 1;
+	}
+
+	.nav__links {
+		display: none;
+		gap: var(--space-md);
+		margin-left: auto;
+	}
+
+	.nav__links a {
+		font-size: 0.9rem;
+		font-weight: 500;
+		text-decoration: none;
+		color: var(--color-ink-muted);
+		transition: color 0.2s ease;
+	}
+
+	.nav__links a:hover {
+		color: var(--color-ink);
+	}
+
+	.nav__cmd {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-left: auto;
+		padding: 0.35rem 0.65rem;
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+		background: color-mix(in srgb, var(--color-paper) 70%, white);
+		color: var(--color-ink-muted);
+		font: inherit;
+		font-size: 0.8rem;
+		font-weight: 500;
+		cursor: pointer;
+	}
+
+	.nav__cmd kbd {
+		font-family: var(--font-body);
+		font-size: 0.7rem;
+		padding: 0.1rem 0.35rem;
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+		background: var(--color-paper);
+	}
+
+	@media (min-width: 720px) {
+		.nav__links {
+			display: flex;
+		}
+
+		.nav__cmd {
+			margin-left: 0;
+		}
+
+		.nav__cmd-label {
+			display: inline;
+		}
+	}
+</style>
+
+<script>
+	const nav = document.querySelector('.nav');
+	const hero = document.querySelector('#hero');
+
+	const onScroll = () => {
+		if (!nav) return;
+		nav.classList.toggle('is-scrolled', window.scrollY > 8);
+		if (hero instanceof HTMLElement) {
+			nav.classList.toggle('is-past-hero', window.scrollY > hero.offsetHeight * 0.55);
+		}
+	};
+
+	onScroll();
+	window.addEventListener('scroll', onScroll, { passive: true });
+</script>

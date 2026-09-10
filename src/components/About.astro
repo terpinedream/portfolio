@@ -1,0 +1,63 @@
+---
+import { site } from '../content/site';
+---
+
+<section class="about section" id="about" aria-labelledby="about-title">
+	<div class="wrap about__grid">
+		<div>
+			<p class="section__label reveal">About</p>
+			<h2 class="section__title reveal" id="about-title">Open source from the East Coast</h2>
+		</div>
+		<div class="about__body reveal">
+			<p>{site.about}</p>
+			<p>
+				If something here helps you, you can{' '}
+				<a href={site.links.coffee} target="_blank" rel="noopener noreferrer"
+					>buy me a coffee</a
+				>.
+			</p>
+		</div>
+	</div>
+</section>
+
+<style>
+	.about {
+		background:
+			radial-gradient(80% 60% at 100% 0%, var(--color-wash-b), transparent 55%),
+			var(--color-paper-deep);
+	}
+
+	.about__grid {
+		display: grid;
+		gap: var(--space-lg);
+	}
+
+	.about__body {
+		max-width: 38rem;
+		font-size: 1.12rem;
+		color: var(--color-ink-muted);
+	}
+
+	.about__body p {
+		margin: 0 0 1rem;
+	}
+
+	.about__body a {
+		color: var(--color-accent);
+		font-weight: 600;
+		text-decoration: none;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+
+	.about__body a:hover {
+		border-bottom-color: currentColor;
+	}
+
+	@media (min-width: 800px) {
+		.about__grid {
+			grid-template-columns: 1fr 1fr;
+			align-items: end;
+			gap: var(--space-xl);
+		}
+	}
+</style>

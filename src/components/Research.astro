@@ -1,0 +1,128 @@
+---
+import { research } from '../content/research';
+import { withBase } from '../lib/paths';
+---
+
+<section class="research section" id="research" aria-labelledby="research-title">
+	<div class="wrap research__grid">
+		<div class="research__copy">
+			<p class="section__label reveal">{research.label}</p>
+			<h2 class="section__title reveal" id="research-title">{research.title}</h2>
+			<p class="research__lede reveal">{research.lede}</p>
+			<div class="research__body reveal">
+				{research.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+			</div>
+		</div>
+
+		<aside class="research__doc reveal">
+			<p class="research__doc-label">Report</p>
+			<p class="research__doc-name">{research.pdf.filename}</p>
+			<p class="research__doc-meta">{research.pdf.meta}</p>
+			<a
+				class="research__doc-link"
+				href={withBase(research.pdf.page)}
+			>
+				{research.pdf.label}
+			</a>
+		</aside>
+	</div>
+</section>
+
+<style>
+	.research {
+		background:
+			radial-gradient(80% 70% at 100% 20%, var(--color-wash-b), transparent 55%),
+			var(--color-paper-deep);
+	}
+
+	.research__grid {
+		display: grid;
+		gap: var(--space-xl);
+		align-items: end;
+	}
+
+	.research__lede {
+		margin: -0.5rem 0 var(--space-md);
+		max-width: 36rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		line-height: 1.35;
+		color: var(--color-slate);
+	}
+
+	.research__body {
+		max-width: 38rem;
+		font-size: 1.08rem;
+		color: var(--color-ink-muted);
+	}
+
+	.research__body p {
+		margin: 0 0 1rem;
+	}
+
+	.research__body p:last-child {
+		margin-bottom: 0;
+	}
+
+	.research__doc {
+		justify-self: start;
+		width: min(100%, 22rem);
+		padding: 1.35rem 1.4rem 1.45rem;
+		border: 1px solid var(--color-line);
+		border-left: 3px solid var(--color-accent);
+		background:
+			linear-gradient(165deg, #f4f6f8 0%, var(--color-paper) 55%, #eef1f5 100%);
+	}
+
+	.research__doc-label {
+		margin: 0 0 0.55rem;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.research__doc-name {
+		margin: 0 0 0.35rem;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		line-height: 1.25;
+		word-break: break-word;
+		color: var(--color-ink);
+	}
+
+	.research__doc-meta {
+		margin: 0 0 1.15rem;
+		font-size: 0.88rem;
+		color: var(--color-ink-muted);
+	}
+
+	.research__doc-link {
+		display: inline-flex;
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--color-accent);
+		text-decoration: none;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+
+	.research__doc-link:hover {
+		border-bottom-color: currentColor;
+	}
+
+	@media (min-width: 860px) {
+		.research__grid {
+			grid-template-columns: 1.2fr minmax(16rem, 22rem);
+			gap: var(--space-2xl);
+		}
+
+		.research__doc {
+			justify-self: end;
+		}
+	}
+</style>

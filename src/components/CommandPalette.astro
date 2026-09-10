@@ -1,0 +1,278 @@
+---
+import { site } from '../content/site';
+import { projects } from '../content/projects';
+import { research } from '../content/research';
+import { withBase } from '../lib/paths';
+
+const items = [
+	{ id: 'toolkit', label: 'Toolkit', href: withBase('#toolkit'), hint: 'Section' },
+	{ id: 'research', label: 'Research', href: withBase('#research'), hint: 'Section' },
+	{
+		id: 'research-report',
+		label: research.title,
+		href: withBase(research.pdf.page),
+		hint: 'Report',
+	},
+	{ id: 'work', label: 'Selected work', href: withBase('#work'), hint: 'Section' },
+	{ id: 'about', label: 'About', href: withBase('#about'), hint: 'Section' },
+	{ id: 'ethos', label: 'Ethos', href: withBase('#ethos'), hint: 'Section' },
+	{ id: 'contact', label: 'Contact', href: withBase('#contact'), hint: 'Section' },
+	...projects.map((p) => ({
+		id: p.slug,
+		label: p.title,
+		href: withBase(`projects/${p.slug}/`),
+		hint: 'Project',
+	})),
+	{ id: 'github', label: 'GitHub profile', href: site.links.github, hint: 'External' },
+];
+---
+
+<div class="palette" data-palette hidden>
+	<div class="palette__backdrop" data-palette-close></div>
+	<div
+		class="palette__dialog"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="palette-title"
+		tabindex="-1"
+	>
+		<p class="palette__title" id="palette-title">Jump to</p>
+		<input
+			class="palette__input"
+			type="search"
+			placeholder="Search sections and projects…"
+			data-palette-input
+			autocomplete="off"
+			spellcheck="false"
+		/>
+		<ul class="palette__list" data-palette-list>
+			{
+				items.map((item, i) => (
+					<li>
+						<a
+							class="palette__item"
+							href={item.href}
+							data-palette-item
+							data-label={item.label.toLowerCase()}
+							data-index={i}
+							{...(item.hint === 'External' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+						>
+							<span>{item.label}</span>
+							<span class="palette__hint">{item.hint}</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+		<p class="palette__footer"><kbd>↑↓</kbd> navigate · <kbd>Enter</kbd> open · <kbd>Esc</kbd> close</p>
+	</div>
+</div>
+
+<style>
+	.palette[hidden] {
+		display: none;
+	}
+
+	.palette {
+		position: fixed;
+		inset: 0;
+		z-index: 80;
+		display: grid;
+		place-items: start center;
+		padding: 12vh 1rem 1rem;
+	}
+
+	.palette__backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(20, 24, 32, 0.35);
+		backdrop-filter: blur(4px);
+	}
+
+	.palette__dialog {
+		position: relative;
+		width: min(32rem, 100%);
+		padding: 1rem;
+		background: var(--color-paper);
+		border: 1px solid var(--color-line);
+		box-shadow: 0 24px 60px rgba(20, 24, 32, 0.22);
+		animation: palette-in 0.25s var(--ease-out);
+	}
+
+	@keyframes palette-in {
+		from {
+			opacity: 0;
+			transform: translateY(-0.5rem) scale(0.98);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	.palette__title {
+		margin: 0 0 0.65rem;
+		font-size: 0.72rem;
+		font-weight: 600;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.palette__input {
+		width: 100%;
+		padding: 0.75rem 0.85rem;
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+		background: white;
+		color: var(--color-ink);
+		font: inherit;
+		font-size: 1rem;
+	}
+
+	.palette__list {
+		list-style: none;
+		margin: 0.65rem 0 0;
+		padding: 0;
+		max-height: min(50vh, 22rem);
+		overflow: auto;
+	}
+
+	.palette__item {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.7rem 0.75rem;
+		text-decoration: none;
+		border-radius: 2px;
+		color: var(--color-ink);
+	}
+
+	.palette__item[aria-selected='true'],
+	.palette__item:hover {
+		background: var(--color-accent-soft);
+	}
+
+	.palette__item.is-hidden {
+		display: none;
+	}
+
+	.palette__hint {
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.palette__footer {
+		margin: 0.75rem 0 0;
+		font-size: 0.75rem;
+		color: var(--color-slate-soft);
+	}
+
+	.palette__footer kbd {
+		font-family: var(--font-body);
+		font-size: 0.7rem;
+		padding: 0.05rem 0.3rem;
+		border: 1px solid var(--color-line);
+		border-radius: 2px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.palette__dialog {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-palette]');
+	const input = document.querySelector<HTMLInputElement>('[data-palette-input]');
+	const list = document.querySelector('[data-palette-list]');
+	const openers = document.querySelectorAll('[data-open-palette]');
+	const closers = document.querySelectorAll('[data-palette-close]');
+
+	if (root && input && list) {
+		const items = () =>
+			Array.from(list.querySelectorAll<HTMLAnchorElement>('[data-palette-item]:not(.is-hidden)'));
+
+		let active = 0;
+
+		const setActive = (index: number) => {
+			const visible = items();
+			if (!visible.length) return;
+			active = (index + visible.length) % visible.length;
+			visible.forEach((el, i) => el.setAttribute('aria-selected', i === active ? 'true' : 'false'));
+			visible[active]?.scrollIntoView({ block: 'nearest' });
+		};
+
+		const filter = () => {
+			const q = input.value.trim().toLowerCase();
+			list.querySelectorAll<HTMLAnchorElement>('[data-palette-item]').forEach((el) => {
+				const label = el.dataset.label ?? '';
+				el.classList.toggle('is-hidden', Boolean(q) && !label.includes(q));
+			});
+			setActive(0);
+		};
+
+		const open = () => {
+			root.hidden = false;
+			document.body.style.overflow = 'hidden';
+			input.value = '';
+			filter();
+			input.focus();
+		};
+
+		const close = () => {
+			root.hidden = true;
+			document.body.style.overflow = '';
+		};
+
+		openers.forEach((btn) => btn.addEventListener('click', open));
+		closers.forEach((el) => el.addEventListener('click', close));
+
+		input.addEventListener('input', filter);
+
+		window.addEventListener('keydown', (event) => {
+			const metaK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+			const slash =
+				event.key === '/' &&
+				!(event.target instanceof HTMLInputElement) &&
+				!(event.target instanceof HTMLTextAreaElement);
+
+			if (metaK || slash) {
+				event.preventDefault();
+				if (root.hidden) open();
+				else close();
+				return;
+			}
+
+			if (root.hidden) return;
+
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				close();
+				return;
+			}
+
+			if (event.key === 'ArrowDown') {
+				event.preventDefault();
+				setActive(active + 1);
+			} else if (event.key === 'ArrowUp') {
+				event.preventDefault();
+				setActive(active - 1);
+			} else if (event.key === 'Enter') {
+				event.preventDefault();
+				items()[active]?.click();
+			}
+		});
+
+		list.addEventListener('click', (event) => {
+			const target = event.target;
+			if (target instanceof Element && target.closest('[data-palette-item]')) {
+				close();
+			}
+		});
+	}
+</script>

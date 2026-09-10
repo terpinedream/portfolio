@@ -1,0 +1,442 @@
+---
+import { projects } from '../content/projects';
+import type { Project } from '../content/projects';
+import { withBase } from '../lib/paths';
+
+const list = projects.filter((p) => p.featured);
+
+function starLabel(n: number) {
+	return n === 1 ? '1 star' : `${n} stars`;
+}
+---
+
+<section class="work section" id="work" aria-labelledby="work-title">
+	<div class="wrap">
+		<p class="section__label reveal">Selected work</p>
+    <h2 class="section__title reveal" id="work-title"><b>Projects built for</b> <i>solutions</i></h2>
+
+		<ul class="project-list" data-project-list>
+			{
+				list.map((project: Project, index: number) => (
+					<li
+						class="project reveal"
+						style={`--accent: ${project.accent}`}
+						data-project
+						tabindex="0"
+					>
+						<a class="project__hit" href={withBase(`projects/${project.slug}/`)}>
+							<span class="visually-hidden">View {project.title}</span>
+						</a>
+						<div class="project__index">{String(index + 1).padStart(2, '0')}</div>
+						<div class="project__main">
+							<div class="project__title-row">
+								<h3 class="project__title">{project.title}</h3>
+								<span class="project__stars">{starLabel(project.stars)}</span>
+							</div>
+							<p class="project__tagline">{project.tagline}</p>
+							<p class="project__desc">{project.description}</p>
+							<ul class="project__stack">
+								{project.stack.map((item) => (
+									<li>{item}</li>
+								))}
+							</ul>
+							<div class="project__links">
+								<a href={project.repo} target="_blank" rel="noopener noreferrer">
+									Repository
+								</a>
+								{(project.links ?? []).map((link) => (
+									<a href={link.href} target="_blank" rel="noopener noreferrer">
+										{link.label}
+									</a>
+								))}
+								<a href={withBase(`projects/${project.slug}/`)}>Details</a>
+							</div>
+						</div>
+						<div class="project__media">
+							{project.image ? (
+								<figure
+									class:list={[
+										'project__panel',
+										'project__panel--photo',
+										project.imageFit === 'contain' && 'project__panel--contain',
+									]}
+								>
+									<img
+										src={withBase(project.image)}
+										alt={`${project.title} screenshot`}
+										loading="lazy"
+										decoding="async"
+									/>
+								</figure>
+							) : (
+								<div class="project__panel" aria-hidden="true">
+									<div class="project__specimen">
+										<span class="project__glyph">{project.title.slice(0, 1).toLowerCase()}</span>
+										<div class="project__specimen-copy">
+											<span class="project__specimen-name">{project.title}</span>
+											<span class="project__specimen-rule"></span>
+											<span class="project__specimen-meta">{project.stack.join(' · ')}</span>
+										</div>
+									</div>
+									<div class="project__signal">
+										<span></span>
+										<span></span>
+										<span></span>
+									</div>
+								</div>
+							)}
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.project-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.project {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: var(--space-md);
+		padding: var(--space-xl) 0;
+		border-top: 1px solid var(--color-line);
+		outline: none;
+	}
+
+	.project:last-child {
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.project__hit {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+	}
+
+	.project__index {
+		position: relative;
+		z-index: 1;
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--color-slate-soft);
+		padding-top: 0.35rem;
+		pointer-events: none;
+	}
+
+	.project__main {
+		position: relative;
+		z-index: 1;
+		max-width: 40rem;
+		pointer-events: none;
+	}
+
+	.project__links {
+		pointer-events: auto;
+	}
+
+	.project__title-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.75rem 1rem;
+		margin-bottom: 0.4rem;
+	}
+
+	.project__title {
+		margin: 0;
+		font-family: var(--font-display);
+		font-size: clamp(1.75rem, 3.5vw, 2.6rem);
+		font-weight: 500;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+	}
+
+	.project__stars {
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-slate-soft);
+	}
+
+	.project__tagline {
+		margin: 0 0 0.5rem;
+		font-size: 1.05rem;
+		color: var(--color-ink-muted);
+	}
+
+	.project__desc {
+		margin: 0;
+		max-height: 0;
+		overflow: hidden;
+		opacity: 0;
+		color: var(--color-ink-muted);
+		font-size: 0.98rem;
+		transition:
+			max-height 0.45s var(--ease-out),
+			opacity 0.35s var(--ease-out),
+			margin 0.35s var(--ease-out);
+	}
+
+	.project.is-active .project__desc,
+	.project:focus-within .project__desc,
+	.project:hover .project__desc {
+		max-height: 8rem;
+		opacity: 1;
+		margin: 0.65rem 0 0.85rem;
+	}
+
+	.project__stack {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		list-style: none;
+		margin: 0.85rem 0 0;
+		padding: 0;
+	}
+
+	.project__stack li {
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--color-slate);
+		border-bottom: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+		padding-bottom: 0.1rem;
+	}
+
+	.project__links {
+		display: flex;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.project__links a {
+		position: relative;
+		z-index: 2;
+		font-size: 0.92rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--color-accent);
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.2s ease;
+	}
+
+	.project__links a:hover {
+		border-bottom-color: currentColor;
+	}
+
+	.project__media {
+		display: none;
+		position: relative;
+		z-index: 1;
+		pointer-events: none;
+	}
+
+	.project__panel {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 5 / 4;
+		overflow: hidden;
+		border: 1px solid var(--color-line);
+		background:
+			radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 55%),
+			linear-gradient(165deg, #f4f6f8 0%, var(--color-paper) 48%, var(--color-paper-deep) 100%);
+		transform: translateY(0.6rem);
+		opacity: 0.72;
+		transition:
+			transform 0.45s var(--ease-out),
+			opacity 0.45s var(--ease-out),
+			border-color 0.45s var(--ease-out);
+	}
+
+	.project__panel::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		background: var(--accent);
+		z-index: 1;
+	}
+
+	.project__panel--photo {
+		margin: 0;
+		background: var(--color-paper-deep);
+	}
+
+	.project__panel--photo img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top center;
+		display: block;
+	}
+
+	.project__panel--contain {
+		background: #0a0a0a;
+	}
+
+	.project__panel--contain img {
+		object-fit: contain;
+		object-position: center;
+	}
+
+	.project.is-active .project__panel,
+	.project:focus-within .project__panel,
+	.project:hover .project__panel {
+		transform: translateY(0);
+		opacity: 1;
+		border-color: color-mix(in srgb, var(--accent) 35%, var(--color-line));
+	}
+
+	.project__specimen {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		grid-template-rows: 1fr auto;
+		padding: 1.1rem 1.15rem 1rem 1.35rem;
+	}
+
+	.project__glyph {
+		align-self: end;
+		font-family: var(--font-display);
+		font-size: clamp(4.5rem, 8vw, 6.25rem);
+		font-weight: 500;
+		line-height: 0.85;
+		letter-spacing: -0.06em;
+		color: color-mix(in srgb, var(--accent) 72%, var(--color-ink));
+		opacity: 0.9;
+	}
+
+	.project__specimen-copy {
+		display: grid;
+		gap: 0.4rem;
+		padding-top: 0.85rem;
+	}
+
+	.project__specimen-name {
+		font-family: var(--font-display);
+		font-size: 1.05rem;
+		font-weight: 500;
+		letter-spacing: -0.02em;
+		color: var(--color-ink);
+	}
+
+	.project__specimen-rule {
+		display: block;
+		height: 1px;
+		width: 100%;
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--accent) 55%, transparent),
+			var(--color-line) 55%,
+			transparent
+		);
+	}
+
+	.project__specimen-meta {
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.project__signal {
+		position: absolute;
+		top: 0.9rem;
+		right: 0.9rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		width: 2.4rem;
+	}
+
+	.project__signal span {
+		display: block;
+		height: 2px;
+		border-radius: 1px;
+		background: color-mix(in srgb, var(--accent) 45%, var(--color-slate-soft));
+		opacity: 0.55;
+	}
+
+	.project__signal span:nth-child(1) {
+		width: 100%;
+	}
+
+	.project__signal span:nth-child(2) {
+		width: 72%;
+		opacity: 0.35;
+	}
+
+	.project__signal span:nth-child(3) {
+		width: 48%;
+		opacity: 0.25;
+	}
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	@media (min-width: 900px) {
+		.project {
+			grid-template-columns: 3rem 1fr min(18rem, 28%);
+			align-items: center;
+			gap: var(--space-lg);
+		}
+
+		.project__media {
+			display: block;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project__desc {
+			max-height: none;
+			opacity: 1;
+			margin: 0.65rem 0 0.85rem;
+		}
+
+		.project__panel {
+			transform: none;
+			opacity: 1;
+		}
+	}
+</style>
+
+<script>
+	const list = document.querySelector('[data-project-list]');
+	if (list) {
+		const items = Array.from(list.querySelectorAll<HTMLElement>('[data-project]'));
+
+		const setActive = (el: HTMLElement | null) => {
+			items.forEach((item) => item.classList.toggle('is-active', item === el));
+		};
+
+		items.forEach((item) => {
+			item.addEventListener('mouseenter', () => setActive(item));
+			item.addEventListener('focusin', () => setActive(item));
+		});
+
+		list.addEventListener('mouseleave', () => setActive(items[0] ?? null));
+		setActive(items[0] ?? null);
+	}
+</script>

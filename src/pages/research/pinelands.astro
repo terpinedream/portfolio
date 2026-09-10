@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Nav from '../../components/Nav.astro';
+import CommandPalette from '../../components/CommandPalette.astro';
+import { research } from '../../content/research';
+import { site } from '../../content/site';
+import { withBase } from '../../lib/paths';
+
+const pdfUrl = withBase(research.pdf.href);
+---
+
+<BaseLayout title={research.title} description={research.lede}>
+	<Nav />
+	<main id="main" class="report">
+		<article class="wrap report__article">
+			<p class="report__crumb">
+				<a href={withBase('#research')}>Research</a>
+				<span aria-hidden="true">/</span>
+				<span>Report</span>
+			</p>
+
+			<header class="report__header">
+				<p class="report__meta">{research.pdf.meta}</p>
+				<h1>{research.title}</h1>
+				<p class="report__lede">{research.lede}</p>
+			</header>
+
+			<div class="report__body">
+				{research.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+			</div>
+
+			<div class="report__actions">
+				<a class="report__btn" href={pdfUrl} download={research.pdf.filename}>Download PDF</a>
+				<a class="report__link" href={withBase('#research')}>Back to research</a>
+			</div>
+
+			<figure class="report__viewer">
+				<iframe
+					class="report__frame"
+					src={`${pdfUrl}#view=FitH`}
+					title={`${research.title} PDF`}
+					loading="lazy"
+				></iframe>
+				<figcaption class="report__fallback">
+					If the preview doesn’t load,{' '}
+					<a href={pdfUrl} target="_blank" rel="noopener noreferrer">open the PDF directly</a>.
+				</figcaption>
+			</figure>
+		</article>
+	</main>
+
+	<footer class="report__footer">
+		<div class="wrap">
+			<p>© {new Date().getFullYear()} {site.brand}</p>
+		</div>
+	</footer>
+	<CommandPalette />
+</BaseLayout>
+
+<style>
+	.report {
+		padding: 5rem 0 3rem;
+	}
+
+	.report__article {
+		max-width: 56rem;
+	}
+
+	.report__crumb {
+		display: flex;
+		gap: 0.5rem;
+		margin: 0 0 1.5rem;
+		font-size: 0.88rem;
+		color: var(--color-slate-soft);
+	}
+
+	.report__crumb a {
+		color: var(--color-accent);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.report__meta {
+		margin: 0 0 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.report__header h1 {
+		margin: 0 0 0.75rem;
+		font-family: var(--font-display);
+		font-size: clamp(2rem, 5vw, 3.25rem);
+		font-weight: 500;
+		letter-spacing: -0.04em;
+		line-height: 1.08;
+	}
+
+	.report__lede {
+		margin: 0;
+		max-width: 40rem;
+		font-size: 1.15rem;
+		color: var(--color-ink-muted);
+	}
+
+	.report__body {
+		max-width: 40rem;
+		margin: 1.5rem 0 0;
+		font-size: 1.05rem;
+		color: var(--color-ink-muted);
+	}
+
+	.report__body p {
+		margin: 0 0 1rem;
+	}
+
+	.report__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1rem;
+		margin: 1.5rem 0 1.75rem;
+	}
+
+	.report__btn {
+		display: inline-flex;
+		padding: 0.75rem 1.2rem;
+		background: var(--color-ink);
+		color: var(--color-paper);
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: 2px;
+	}
+
+	.report__link {
+		font-weight: 600;
+		color: var(--color-accent);
+		text-decoration: none;
+	}
+
+	.report__viewer {
+		margin: 0;
+		border: 1px solid var(--color-line);
+		border-left: 3px solid var(--color-accent);
+		background: #0f141a;
+		overflow: hidden;
+	}
+
+	.report__frame {
+		display: block;
+		width: 100%;
+		height: min(78vh, 54rem);
+		border: 0;
+		background: #1a1f26;
+	}
+
+	.report__fallback {
+		margin: 0;
+		padding: 0.75rem 1rem;
+		border-top: 1px solid rgba(231, 234, 238, 0.12);
+		font-size: 0.88rem;
+		color: rgba(231, 234, 238, 0.7);
+		background: #141920;
+	}
+
+	.report__fallback a {
+		color: #7dcec8;
+		font-weight: 600;
+	}
+
+	.report__footer {
+		padding: 1.5rem 0 2.5rem;
+		border-top: 1px solid var(--color-line);
+		font-size: 0.88rem;
+		color: var(--color-slate-soft);
+	}
+
+	.report__footer p {
+		margin: 0;
+	}
+</style>

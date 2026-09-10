@@ -1,0 +1,244 @@
+---
+import { site } from '../content/site';
+import { withBase } from '../lib/paths';
+---
+
+<section class="hero" id="hero" aria-labelledby="hero-brand">
+	<div class="hero__atmosphere" aria-hidden="true">
+		<div class="hero__wash hero__wash--a"></div>
+		<div class="hero__wash hero__wash--b"></div>
+		<div class="hero__grain"></div>
+		<div class="hero__visual">
+			<div class="hero__desk">
+				<span class="hero__line"></span>
+				<span class="hero__line hero__line--dim"></span>
+				<span class="hero__line"></span>
+				<span class="hero__cursor"></span>
+			</div>
+		</div>
+	</div>
+
+	<div class="hero__content wrap">
+		<p class="hero__brand" id="hero-brand">{site.brand}</p>
+		<h1 class="hero__headline">{site.headline}</h1>
+		<p class="hero__support">{site.tagline}</p>
+		<div class="hero__cta">
+			<a class="btn btn--primary" href={withBase('#work')}>View work</a>
+			<a class="btn btn--ghost" href={site.links.github} target="_blank" rel="noopener noreferrer"
+				>GitHub</a
+			>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		isolation: isolate;
+		display: grid;
+		align-items: start;
+		padding: 1.75rem 0 2rem;
+		overflow: hidden;
+		background: var(--color-paper);
+	}
+
+	.hero__atmosphere {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background:
+			radial-gradient(120% 80% at 80% 10%, var(--color-wash-b), transparent 55%),
+			radial-gradient(90% 70% at 10% 90%, var(--color-wash-a), transparent 50%),
+			linear-gradient(165deg, #edf0f4 0%, var(--color-paper) 45%, #dce2ea 100%);
+	}
+
+	.hero__wash {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(40px);
+		opacity: 0.85;
+	}
+
+	.hero__wash--a {
+		width: min(55vw, 28rem);
+		height: min(55vw, 28rem);
+		right: -6%;
+		top: 8%;
+		background: rgba(61, 79, 99, 0.18);
+	}
+
+	.hero__wash--b {
+		width: min(45vw, 22rem);
+		height: min(45vw, 22rem);
+		left: -4%;
+		bottom: 12%;
+		background: rgba(26, 107, 107, 0.16);
+	}
+
+	.hero__grain {
+		position: absolute;
+		inset: 0;
+		opacity: 0.35;
+		mix-blend-mode: multiply;
+		background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+		pointer-events: none;
+	}
+
+	.hero__visual {
+		position: absolute;
+		top: 1.75rem;
+		right: 4vw;
+		bottom: auto;
+		left: auto;
+		display: block;
+		padding: 0;
+		pointer-events: none;
+	}
+
+	.hero__desk {
+		width: min(42vw, 26rem);
+		aspect-ratio: 4 / 3;
+		padding: 1.4rem 1.5rem;
+		border: 1px solid rgba(20, 24, 32, 0.14);
+		background:
+			linear-gradient(160deg, rgba(255, 255, 255, 0.35), transparent 40%),
+			linear-gradient(180deg, #2c3540 0%, #1a222c 100%);
+		box-shadow:
+			0 30px 60px rgba(20, 24, 32, 0.18),
+			inset 0 1px 0 rgba(255, 255, 255, 0.08);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.7rem;
+		transform: perspective(900px) rotateY(-12deg) rotateX(4deg);
+		opacity: 0.92;
+	}
+
+	.hero__line {
+		display: block;
+		height: 0.45rem;
+		width: 72%;
+		border-radius: 1px;
+		background: rgba(231, 234, 238, 0.55);
+	}
+
+	.hero__line--dim {
+		width: 48%;
+		opacity: 0.45;
+	}
+
+	.hero__cursor {
+		width: 0.55rem;
+		height: 1.1rem;
+		margin-top: 0.2rem;
+		background: #7dcec8;
+		animation: blink 1.1s steps(1) infinite;
+	}
+
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.hero__content {
+		position: relative;
+		max-width: 40rem;
+	}
+
+	.hero__brand {
+		margin: 0 0 1rem;
+		font-family: var(--font-display);
+		font-size: clamp(3.2rem, 11vw, 6.5rem);
+		font-weight: 500;
+		line-height: 0.95;
+		letter-spacing: -0.04em;
+		color: var(--color-ink);
+		animation: rise 0.9s var(--ease-out) both;
+	}
+
+	.hero__headline {
+		margin: 0 0 0.85rem;
+		max-width: 18ch;
+		font-family: var(--font-display);
+		font-size: clamp(1.45rem, 3.2vw, 2.15rem);
+		font-weight: 500;
+		line-height: 1.2;
+		letter-spacing: -0.02em;
+		color: var(--color-slate);
+		animation: rise 0.9s var(--ease-out) 0.08s both;
+	}
+
+	.hero__support {
+		margin: 0 0 1.75rem;
+		font-size: 1.05rem;
+		color: var(--color-ink-muted);
+		animation: rise 0.9s var(--ease-out) 0.14s both;
+	}
+
+	.hero__cta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		animation: rise 0.9s var(--ease-out) 0.2s both;
+	}
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.75rem 1.25rem;
+		border-radius: 2px;
+		font-size: 0.95rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			background 0.2s ease,
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+
+	.btn--primary {
+		background: var(--color-ink);
+		color: var(--color-paper);
+	}
+
+	.btn--primary:hover {
+		background: var(--color-slate);
+	}
+
+	.btn--ghost {
+		border: 1px solid var(--color-line);
+		background: transparent;
+		color: var(--color-ink);
+	}
+
+	.btn--ghost:hover {
+		border-color: var(--color-ink-muted);
+		background: rgba(255, 255, 255, 0.35);
+	}
+
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(1.1rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@media (max-width: 720px) {
+		.hero__visual {
+			top: 1.25rem;
+			right: 1rem;
+		}
+
+		.hero__desk {
+			width: min(42vw, 11rem);
+			opacity: 0.45;
+			transform: perspective(700px) rotateY(-8deg) rotateX(3deg);
+		}
+	}
+</style>

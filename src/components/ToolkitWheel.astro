@@ -1,0 +1,329 @@
+---
+import { toolkit, toolkitColors } from '../content/toolkit';
+
+const cx = 100;
+const cy = 100;
+const rOut = 88;
+const rIn = 44;
+const rLabel = (rIn + rOut) / 2;
+const popDistance = 7;
+const gap = 1.2;
+const sliceAngle = 360 / toolkit.length;
+
+function polar(radius: number, angleDeg: number) {
+	const rad = ((angleDeg - 90) * Math.PI) / 180;
+	return {
+		x: cx + radius * Math.cos(rad),
+		y: cy + radius * Math.sin(rad),
+	};
+}
+
+function donutSlice(startAngle: number, endAngle: number) {
+	const start = polar(rOut, startAngle);
+	const end = polar(rOut, endAngle);
+	const startInner = polar(rIn, endAngle);
+	const endInner = polar(rIn, startAngle);
+	const large = endAngle - startAngle > 180 ? 1 : 0;
+	return [
+		`M ${start.x} ${start.y}`,
+		`A ${rOut} ${rOut} 0 ${large} 1 ${end.x} ${end.y}`,
+		`L ${startInner.x} ${startInner.y}`,
+		`A ${rIn} ${rIn} 0 ${large} 0 ${endInner.x} ${endInner.y}`,
+		'Z',
+	].join(' ');
+}
+
+function sliceLabel(name: string) {
+	if (name.includes('/')) return name.split('/')[0]!;
+	return name;
+}
+
+const slices = toolkit.map((item, index) => {
+	const start = index * sliceAngle + gap / 2;
+	const end = (index + 1) * sliceAngle - gap / 2;
+	const midAngle = start + (end - start) / 2;
+	const pop = polar(popDistance, midAngle);
+	const labelPos = polar(rLabel, midAngle);
+	return {
+		...item,
+		color: toolkitColors[index % toolkitColors.length],
+		path: donutSlice(start, end),
+		midAngle,
+		popX: pop.x - cx,
+		popY: pop.y - cy,
+		labelX: labelPos.x,
+		labelY: labelPos.y,
+		label: sliceLabel(item.name),
+	};
+});
+
+const first = slices[0];
+---
+
+<section class="toolkit section" id="toolkit" aria-labelledby="toolkit-title" data-toolkit>
+	<div class="wrap">
+		<p class="section__label reveal">Toolkit</p>
+		<h2 class="section__title reveal" id="toolkit-title">Tools & frameworks</h2>
+
+		<div class="toolkit__layout reveal">
+			<div class="toolkit__wheel-wrap">
+				<svg
+					class="toolkit__wheel"
+					viewBox="0 0 200 200"
+					role="list"
+					aria-label="Interactive toolkit wheel"
+					data-toolkit-wheel
+				>
+					<title>Toolkit wheel</title>
+					<g class="toolkit__spin" data-toolkit-spin>
+						{
+							slices.map((slice, index) => (
+								<g
+									class="toolkit__wedge"
+									role="listitem"
+									tabindex="0"
+									data-toolkit-slice
+									data-index={index}
+									aria-label={`${slice.name}, ${slice.category}`}
+									style={`--pop-x: ${slice.popX}px; --pop-y: ${slice.popY}px`}
+								>
+									<path class="toolkit__slice" d={slice.path} fill={slice.color} />
+									<text
+										class="toolkit__label"
+										x={slice.labelX}
+										y={slice.labelY}
+										text-anchor="middle"
+										dominant-baseline="middle"
+									>
+										{slice.label}
+									</text>
+								</g>
+							))
+						}
+					</g>
+					<circle class="toolkit__hub" cx={cx} cy={cy} r={rIn - 2} />
+					<text class="toolkit__hub-label" x={cx} y={cy} text-anchor="middle" dominant-baseline="middle">
+						stack
+					</text>
+				</svg>
+				<p class="toolkit__hint">Hover or focus a slice</p>
+			</div>
+
+			<aside class="toolkit__detail" aria-live="polite" data-toolkit-detail>
+				<p class="toolkit__category" data-toolkit-category>{first?.category}</p>
+				<h3 class="toolkit__name" data-toolkit-name>{first?.name}</h3>
+				<p class="toolkit__summary" data-toolkit-summary>{first?.summary}</p>
+			</aside>
+		</div>
+	</div>
+</section>
+
+<script
+	define:vars={{
+		slicesPayload: slices.map((s) => ({ name: s.name, category: s.category, summary: s.summary })),
+	}}
+>
+	const root = document.querySelector('[data-toolkit]');
+	if (root) {
+		const spin = root.querySelector('[data-toolkit-spin]');
+		const wedges = Array.from(root.querySelectorAll('[data-toolkit-slice]'));
+		const categoryEl = root.querySelector('[data-toolkit-category]');
+		const nameEl = root.querySelector('[data-toolkit-name]');
+		const summaryEl = root.querySelector('[data-toolkit-summary]');
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		const setActive = (index) => {
+			const item = slicesPayload[index];
+			if (!item) return;
+			wedges.forEach((wedge, i) => {
+				wedge.classList.toggle('is-active', i === index);
+			});
+			if (categoryEl) categoryEl.textContent = item.category;
+			if (nameEl) nameEl.textContent = item.name;
+			if (summaryEl) summaryEl.textContent = item.summary;
+		};
+
+		const pause = () => root.classList.add('is-paused');
+		const resume = () => {
+			if (!root.querySelector('.toolkit__wedge:hover, .toolkit__wedge:focus-visible')) {
+				root.classList.remove('is-paused');
+			}
+		};
+
+		wedges.forEach((wedge, index) => {
+			wedge.addEventListener('mouseenter', () => {
+				pause();
+				setActive(index);
+			});
+			wedge.addEventListener('focus', () => {
+				pause();
+				setActive(index);
+			});
+			wedge.addEventListener('mouseleave', resume);
+			wedge.addEventListener('blur', resume);
+		});
+
+		root.addEventListener('mouseleave', () => {
+			if (!reduceMotion) root.classList.remove('is-paused');
+		});
+
+		if (reduceMotion) {
+			root.classList.add('is-paused');
+			spin?.classList.add('is-static');
+		}
+
+		setActive(0);
+	}
+</script>
+
+<style>
+	.toolkit__layout {
+		display: grid;
+		gap: var(--space-xl);
+		align-items: center;
+	}
+
+	.toolkit__wheel-wrap {
+		justify-self: center;
+		text-align: center;
+		max-width: 24rem;
+		width: 100%;
+	}
+
+	.toolkit__wheel {
+		width: min(100%, 24rem);
+		height: auto;
+		overflow: visible;
+	}
+
+	.toolkit__spin {
+		transform-origin: 100px 100px;
+		animation: toolkit-spin 48s linear infinite;
+	}
+
+	.toolkit.is-paused .toolkit__spin,
+	.toolkit__spin.is-static {
+		animation-play-state: paused;
+	}
+
+	.toolkit__wedge {
+		cursor: pointer;
+		outline: none;
+		transition: transform 0.28s var(--ease-out);
+	}
+
+	.toolkit__wedge:hover,
+	.toolkit__wedge:focus-visible,
+	.toolkit__wedge.is-active {
+		transform: translate(var(--pop-x), var(--pop-y));
+	}
+
+	.toolkit__slice {
+		transition:
+			opacity 0.25s var(--ease-out),
+			filter 0.25s var(--ease-out);
+		opacity: 0.84;
+	}
+
+	.toolkit__wedge:hover .toolkit__slice,
+	.toolkit__wedge:focus-visible .toolkit__slice,
+	.toolkit__wedge.is-active .toolkit__slice {
+		opacity: 1;
+		filter: brightness(1.1);
+	}
+
+	.toolkit__label {
+		fill: rgba(247, 249, 251, 0.94);
+		font-family: var(--font-body);
+		font-size: 5.4px;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.toolkit__hub {
+		fill: var(--color-paper);
+		stroke: var(--color-line);
+		stroke-width: 1;
+		pointer-events: none;
+	}
+
+	.toolkit__hub-label {
+		fill: var(--color-slate-soft);
+		font-family: var(--font-body);
+		font-size: 9px;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		pointer-events: none;
+	}
+
+	.toolkit__hint {
+		margin: 0.85rem 0 0;
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.toolkit__detail {
+		max-width: 28rem;
+		min-height: 8rem;
+		padding-block: 0.25rem;
+	}
+
+	.toolkit__category {
+		margin: 0 0 0.45rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--color-slate-soft);
+	}
+
+	.toolkit__name {
+		margin: 0 0 0.75rem;
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+		font-weight: 500;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		color: var(--color-ink);
+	}
+
+	.toolkit__summary {
+		margin: 0;
+		font-size: 1.08rem;
+		line-height: 1.65;
+		color: var(--color-ink-muted);
+	}
+
+	@keyframes toolkit-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (min-width: 800px) {
+		.toolkit__layout {
+			grid-template-columns: minmax(16rem, 24rem) 1fr;
+			gap: var(--space-2xl);
+		}
+
+		.toolkit__wheel-wrap {
+			justify-self: start;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.toolkit__spin {
+			animation: none;
+		}
+
+		.toolkit__wedge {
+			transition: none;
+		}
+	}
+</style>
