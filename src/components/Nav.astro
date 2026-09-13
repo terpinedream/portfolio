@@ -113,6 +113,46 @@ import { withBase } from '../lib/paths';
 			display: inline;
 		}
 	}
+
+	@media (max-width: 719px) {
+		.nav__inner {
+			gap: 0.45rem;
+			min-height: 3rem;
+		}
+
+		.nav__brand {
+			flex: none;
+			font-size: 0.95rem;
+		}
+
+		.nav__links {
+			display: flex;
+			flex: 1;
+			min-width: 0;
+			gap: 0.7rem;
+			overflow-x: auto;
+			scrollbar-width: none;
+		}
+
+		.nav__links::-webkit-scrollbar {
+			display: none;
+		}
+
+		.nav__links a {
+			flex: none;
+			font-size: 0.72rem;
+		}
+
+		.nav__cmd {
+			flex: none;
+			margin-left: 0;
+			padding: 0.28rem 0.4rem;
+		}
+
+		.nav__cmd-label {
+			display: none;
+		}
+	}
 </style>
 
 <script>

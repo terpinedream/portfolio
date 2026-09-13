@@ -139,3 +139,22 @@ a {
 		transform: none;
 	}
 }
+
+@media (max-width: 899px) {
+	:root {
+		--space-md: 1rem;
+		--space-lg: 1.35rem;
+		--space-xl: 2rem;
+		--space-2xl: 3rem;
+		--content: min(72rem, calc(100% - 1.5rem));
+	}
+
+	body {
+		font-size: 0.98rem;
+		overflow-x: clip;
+	}
+
+	.section__title {
+		font-size: clamp(1.55rem, 7vw, 2.15rem);
+	}
+}

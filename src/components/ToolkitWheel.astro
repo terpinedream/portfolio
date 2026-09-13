@@ -306,6 +306,41 @@ const first = slices[0];
 		}
 	}
 
+	@media (max-width: 799px) {
+		.toolkit__layout {
+			grid-template-columns: minmax(7.5rem, 42%) minmax(0, 1fr);
+			gap: 1rem;
+			align-items: center;
+		}
+
+		.toolkit__wheel-wrap {
+			justify-self: start;
+			max-width: none;
+		}
+
+		.toolkit__wheel {
+			width: 100%;
+		}
+
+		.toolkit__hint {
+			font-size: 0.62rem;
+			letter-spacing: 0.04em;
+		}
+
+		.toolkit__detail {
+			min-height: 0;
+		}
+
+		.toolkit__name {
+			font-size: clamp(1.2rem, 4.5vw, 1.7rem);
+		}
+
+		.toolkit__summary {
+			font-size: 0.92rem;
+			line-height: 1.5;
+		}
+	}
+
 	@media (min-width: 800px) {
 		.toolkit__layout {
 			grid-template-columns: minmax(16rem, 24rem) 1fr;

@@ -115,6 +115,31 @@ import { withBase } from '../lib/paths';
 		border-bottom-color: currentColor;
 	}
 
+	@media (max-width: 859px) {
+		.research__grid {
+			grid-template-columns: minmax(0, 1.15fr) minmax(8.5rem, 0.85fr);
+			align-items: end;
+			gap: 1rem;
+		}
+
+		.research__lede {
+			font-size: clamp(1rem, 3.4vw, 1.2rem);
+		}
+
+		.research__body {
+			font-size: 0.95rem;
+		}
+
+		.research__doc {
+			width: 100%;
+			padding: 0.9rem 0.85rem 1rem;
+		}
+
+		.research__doc-name {
+			font-size: 1rem;
+		}
+	}
+
 	@media (min-width: 860px) {
 		.research__grid {
 			grid-template-columns: 1.2fr minmax(16rem, 22rem);
